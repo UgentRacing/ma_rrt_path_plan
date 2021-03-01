@@ -15,12 +15,22 @@ import time
 
 import sys, select, termios, tty
 
-class RRT():
+
+class RRT:
     """
     Class for RRT Planning
     """
 
-    def __init__(self, start, planDistance, obstacleList, expandDis=0.5, turnAngle=30, maxIter=1000, rrtTargets = None):
+    def __init__(
+        self,
+        start,
+        planDistance,
+        obstacleList,
+        expandDis=0.5,
+        turnAngle=30,
+        maxIter=1000,
+        rrtTargets=None,
+    ):
 
         self.start = Node(start[0], start[1], start[2])
         self.startYaw = start[2]
@@ -59,7 +69,7 @@ class RRT():
             nearestNode = self.nodeList[nind]
             # print("nearestNode: " + str(nearestNode))
 
-            if (nearestNode.cost >= self.planDistance):
+            if nearestNode.cost >= self.planDistance:
                 # self.aboveMaxDistance += 1
                 continue
             # self.belowMaxDistance += 1
@@ -78,7 +88,7 @@ class RRT():
                 self.nodeList.append(newNode)
                 # self.rewire(newNode, nearinds)
 
-                if (newNode.cost >= self.planDistance):
+                if newNode.cost >= self.planDistance:
                     # print("got a leaf " + str(newNode))
                     self.leafNodes.append(newNode)
             # else:
@@ -90,7 +100,7 @@ class RRT():
             if interactive:
                 key = self.getKey()
 
-                if (key == '\x03'): #CTRL+C
+                if key == "\x03":  # CTRL+C
                     break
 
         # print "rrt.Planning(): aboveMaxDistance: {0}".format(self.aboveMaxDistance);
@@ -101,11 +111,11 @@ class RRT():
         return self.nodeList, self.leafNodes
 
     def getKey(self):
-      tty.setraw(sys.stdin.fileno())
-      select.select([sys.stdin], [], [], 0)
-      key = sys.stdin.read(1)
-      termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
-      return key
+        tty.setraw(sys.stdin.fileno())
+        select.select([sys.stdin], [], [], 0)
+        key = sys.stdin.read(1)
+        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
+        return key
 
     def choose_parent(self, newNode, nearinds):
         if len(nearinds) == 0:
@@ -169,7 +179,7 @@ class RRT():
         return newNode
 
     def pi_2_pi(self, angle):
-        return (angle + math.pi) % (2*math.pi) - math.pi
+        return (angle + math.pi) % (2 * math.pi) - math.pi
 
     def steer(self, rnd, nind):
         # expand tree
@@ -189,7 +199,12 @@ class RRT():
         randY = random.uniform(-self.planDistance, self.planDistance)
         rnd = [randX, randY]
 
-        car_rot_mat = np.array([[math.cos(self.startYaw), -math.sin(self.startYaw)], [math.sin(self.startYaw), math.cos(self.startYaw)]])
+        car_rot_mat = np.array(
+            [
+                [math.cos(self.startYaw), -math.sin(self.startYaw)],
+                [math.sin(self.startYaw), math.cos(self.startYaw)],
+            ]
+        )
         rotatedRnd = np.dot(car_rot_mat, rnd)
 
         rotatedRnd = [rotatedRnd[0] + self.start.x, rotatedRnd[1] + self.start.y]
@@ -213,14 +228,16 @@ class RRT():
         # circle idea
         randAngle = random.uniform(0, 2 * math.pi)
         randDist = random.uniform(oSize, maxTargetAroundDist)
-        finalRnd = [x + randDist * math.cos(randAngle), y + randDist * math.sin(randAngle)]
+        finalRnd = [
+            x + randDist * math.cos(randAngle),
+            y + randDist * math.sin(randAngle),
+        ]
 
         return finalRnd
 
     def get_best_last_index(self):
 
-        disglist = [self.calc_dist_to_goal(
-            node.x, node.y) for node in self.nodeList]
+        disglist = [self.calc_dist_to_goal(node.x, node.y) for node in self.nodeList]
         goalinds = [disglist.index(i) for i in disglist if i <= self.expandDis]
         #  print(goalinds)
 
@@ -250,8 +267,10 @@ class RRT():
         nnode = len(self.nodeList)
         # r = 50.0 * math.sqrt((math.log(nnode) / nnode))
         r = self.expandDis * 3.0
-        dlist = [(node.x - newNode.x) ** 2 +
-                 (node.y - newNode.y) ** 2 for node in self.nodeList]
+        dlist = [
+            (node.x - newNode.x) ** 2 + (node.y - newNode.y) ** 2
+            for node in self.nodeList
+        ]
         nearinds = [dlist.index(i) for i in dlist if i <= r ** 2]
         # print "find_near_nodes, size: {0}".format(len(nearinds))
         return nearinds
@@ -293,13 +312,16 @@ class RRT():
 
         for node in self.nodeList:
             if node.parent is not None:
-                plt.plot([node.x, self.nodeList[node.parent].x], [
-                         node.y, self.nodeList[node.parent].y], "-g")
+                plt.plot(
+                    [node.x, self.nodeList[node.parent].x],
+                    [node.y, self.nodeList[node.parent].y],
+                    "-g",
+                )
 
         # draw obstacles
         axes = plt.gca()
         for (ox, oy, size) in self.obstacleList:
-            circle = plt.Circle((ox,oy), radius=size)
+            circle = plt.Circle((ox, oy), radius=size)
             axes.add_patch(circle)
 
         plt.plot(self.start.x, self.start.y, "xr")
@@ -307,8 +329,8 @@ class RRT():
         axes = plt.gca()
         xmin, xmax, ymin, ymax = -5, 25, -20, 20
         # plt.axis([-5, 45, -20, 20])
-        axes.set_xlim([xmin,xmax])
-        axes.set_ylim([ymin,ymax])
+        axes.set_xlim([xmin, xmax])
+        axes.set_ylim([ymin, ymax])
         # plt.axis("equal")
         plt.grid(True)
         plt.pause(0.001)
@@ -319,13 +341,16 @@ class RRT():
         # draw obstacles
         ax = plt.gca()
         for (ox, oy, size) in self.obstacleList:
-            circle = plt.Circle((ox,oy), radius=size)
+            circle = plt.Circle((ox, oy), radius=size)
             ax.add_patch(circle)
 
         for node in self.nodeList:
             if node.parent is not None:
-                plt.plot([node.x, self.nodeList[node.parent].x], [
-                         node.y, self.nodeList[node.parent].y], "-g")
+                plt.plot(
+                    [node.x, self.nodeList[node.parent].x],
+                    [node.y, self.nodeList[node.parent].y],
+                    "-g",
+                )
 
         # plt.plot(self.start.x, self.start.y, "xr")
         # plt.plot(self.end.x, self.end.y, "xr")
@@ -348,7 +373,8 @@ class RRT():
                 return False  # collision
         return True  # safe
 
-class Node():
+
+class Node:
     """
     RRT Node
     """
@@ -361,10 +387,23 @@ class Node():
         self.parent = None
 
     def __str__(self):
-        return str(round(self.x, 2)) + "," + str(round(self.y,2)) + "," + str(math.degrees(self.yaw)) + "," + str(self.cost)
+        return (
+            str(round(self.x, 2))
+            + ","
+            + str(round(self.y, 2))
+            + ","
+            + str(math.degrees(self.yaw))
+            + ","
+            + str(self.cost)
+        )
 
     def __eq__(self, other):
-        return self.x == other.x and self.y == other.y and self.yaw == other.yaw and self.cost == other.cost
+        return (
+            self.x == other.x
+            and self.y == other.y
+            and self.yaw == other.yaw
+            and self.cost == other.cost
+        )
 
     def __repr__(self):
         return str(self)
@@ -391,7 +430,7 @@ def main():
         (20, -1, radius),
         (18.5, 6.5, radius),
         (24, 1, radius),
-        (22, 8, radius)
+        (22, 8, radius),
     ]  # [x,y,size(radius)]
 
     start = [0.0, 0.0, math.radians(0.0)]
@@ -408,12 +447,19 @@ def main():
     startTime = time.time()
 
     # Set Initial parameters
-    rrt = RRT(start, planDistance, obstacleList=obstacleList, expandDis=1, maxIter=iterationNumber, rrtTargets = rrtConeTargets)
+    rrt = RRT(
+        start,
+        planDistance,
+        obstacleList=obstacleList,
+        expandDis=1,
+        maxIter=iterationNumber,
+        rrtTargets=rrtConeTargets,
+    )
     rrt.Planning(True, True)
     # rrt.Planning()
 
-    print "rrt.Planning(): {0} ms".format((time.time() - startTime) * 1000);
-    print "nodesNumber/iteration: {0}/{1}".format(len(rrt.nodeList), iterationNumber)
+    print("rrt.Planning(): {0} ms".format((time.time() - startTime) * 1000))
+    print("nodesNumber/iteration: {0}/{1}".format(len(rrt.nodeList), iterationNumber))
 
     show_animation = True
 
@@ -425,7 +471,7 @@ def main():
         plt.show()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     settings = termios.tcgetattr(sys.stdin)
 
     main()

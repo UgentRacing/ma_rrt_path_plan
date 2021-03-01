@@ -11,10 +11,25 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   sensor_msgs
   geometry_msgs
+  nav_msgs
   message_filters
   message_generation
-  egn_messages
+  # egn_messages
 )
+
+add_message_files(
+  FILES
+  Map.msg
+  Cone.msg
+)
+
+
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+  nav_msgs
+)
+
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -41,7 +56,10 @@ catkin_package(
 #  LIBRARIES egn_camera_projection
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
+  CATKIN_DEPENDS message_runtime
 )
+
+
 
 ###########
 ## Build ##
@@ -72,5 +90,7 @@ install(PROGRAMS
     src/main.py
     src/MaRRTPathPlanNode.py
     src/inc/ma_rrt.py
+    src/MapPublisher.py
+    src/OdometryPublisher.py
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
