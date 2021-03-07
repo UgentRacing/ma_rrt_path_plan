@@ -10,9 +10,8 @@ import csv
 
 import inc.ma_rrt as ma_rrt
 
-from ma_rrt_path_plan.msg import Map
+from mapping_msgs.msg import Map
 
-# from egn_messages.msg import Map
 # from egn_messages.msg import CarSensors
 # from egn_messages.msg import WaypointsArray
 # from egn_messages.msg import Waypoint
@@ -58,6 +57,10 @@ class MaRRTPathPlanNode:
         # rospy.Subscriber("/car_sensors", CarSensors, self.carSensorsCallback)
 
         # # Create publishers
+
+        # TODO
+        ####### Temporary commented -> uncomment if these  messages are properly defined #######
+
         # self.waypointsPub = rospy.Publisher("/waypoints", WaypointsArray, queue_size=0)
 
         # # visuals
@@ -134,6 +137,7 @@ class MaRRTPathPlanNode:
         # print "Estimated processing map callback: {0} ms".format((time.time() - start)*1000);
 
     def mapCallback(self, map):
+        # rospy.loginfo("mapCallback")
         self.map = map
 
     def sampleTree(self):
