@@ -1,24 +1,13 @@
 # RRT with multiple remote goals.
 
 ## Ugent Racing Specific Instructions
+ 
+### Required publishers 
 
-Steps before being able to run anything:
+* Map: see ```map_odom_publisher``` package
+* Odometry: see ```map_odom_publisher``` package
+* WaypointsArray: TODO
 
-in /catkin_ws run <br>
-``` roscore ``` <br>
-``` catkin_make ```  <br>
-``` source devel/setup.bash ``` 
-
-
-I also recommend creating a virtual python environment. This environment needs to be activated when calling the roslaunch commands
-
-### Dummy publishers
-there are 2 dummy publishers. One publishes Map messages on the /map_topic topic and one publishes dummy Odometry messages on the /odometry topic 
-
-To run them, call the following commands in a terminal with your python virtual environment activated 
-
-``` roslaunch ma_rrt_path_plan MapPublisher.launch ```  <br>
-``` roslaunch ma_rrt_path_plan OdometryPublisher.launch ``` 
 
 ## original readme
 
