@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-    <node pkg="ma_rrt_path_plan" type="MapPublisher.py" name="map_publisher_node" output="screen">
-    
-    </node>
-</launch>

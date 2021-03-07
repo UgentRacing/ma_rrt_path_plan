@@ -17,11 +17,11 @@ find_package(catkin REQUIRED COMPONENTS
   # egn_messages
 )
 
-add_message_files(
-  FILES
-  Map.msg
-  Cone.msg
-)
+# add_message_files(
+#   FILES
+#   Map.msg
+#   Cone.msg
+# )
 
 
 generate_messages(
